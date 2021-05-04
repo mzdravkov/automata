@@ -1,2 +1,10 @@
 # automata
-Deterministic Finite State Machine for an university project.
+Deterministic Finite State Machine for a university project.
+
+
+# How to run
+
+```bash
+$ make
+$ ./automata
+```

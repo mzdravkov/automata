@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# vim files
+*.un~
+*.swp
+
+# CLion IDE files
+/.idea
+/cmake-build-debug/
+/CMakeLists.txt
