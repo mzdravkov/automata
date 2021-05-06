@@ -49,7 +49,7 @@ int main() {
             {states[1], states[0]},
     };
     fsm::FSM machine(states, alphabet, initial_state, final_states, transition_table);
-    std::cout << machine.evaluate("01100");
+    std::cout << !machine.evaluate("01110");
 
     return 0;
 }

@@ -172,30 +172,24 @@ void fsm::FSM::validate_final_states() const {
 }
 
 bool fsm::FSM::evaluate(const char* input) {
-    bool flag = false;
     fsm::String word(input);
-    int wordLen = word.size();
 
-    for(int i = 0; i < wordLen; i++){
+    for(int i = 0, l = word.size(); i < l; i++){
         FSM::transition(word[i] - '0'); // convert char to int
     }
 
-    if(FSM::is_in_final_state()) flag = true;
-
+    bool flag = FSM::is_in_final_state();
     FSM::restart();
 
     return flag;
 }
 
 fsm::FSM fsm::FSM::operator!() const {
-    int statesCount = get_states_count();
     std::vector<fsm::State> newFinalStates;
     fsm::FSM complementMachine = *this;
 
-    for(int i = 0; i < statesCount; i++){
-        if(std::find(final_states_.begin(),
-                     final_states_.end(),
-                     states_[i]) != final_states_.end()){
+    for(int i = 0, statesCount = get_states_count(); i < statesCount; i++){
+        if(std::find(final_states_.begin(),final_states_.end(),states_[i]) != final_states_.end()){
             newFinalStates.push_back(states_[i]);
         }
     }
