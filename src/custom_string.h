@@ -10,7 +10,7 @@ namespace fsm {
     public:
         String();
 
-        String(char* str);
+        String(const char* str);
 
         String(int n);
 
@@ -31,6 +31,8 @@ namespace fsm {
         fsm::String operator+(const String &rhs) const;
 
         bool operator<(const String &rhs) const;
+
+        char operator[](unsigned i) const;
     };
 }
 

@@ -70,6 +70,9 @@ namespace fsm {
         // Returns true if the current state is a final state.
         bool is_in_final_state() const;
 
+        // Returns true if the word is recognised by the machine.
+        bool evaluate(const char* word);
+
         // Returns the machine back to the initial state.
         void restart();
     private:

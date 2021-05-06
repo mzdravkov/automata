@@ -3,7 +3,7 @@
 #include "state.h"
 #include "fsm.h"
 
-int main() {
+void t1(){
     fsm::State s1("s1"), s2("s2");
     std::vector<fsm::State> states = {s1, s2};
     std::vector<int> alphabet = {0, 1};
@@ -34,6 +34,22 @@ int main() {
     machine.transition(1);
     std::cout << "Current state: " << machine.get_current_state() << std::endl;
     std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
+}
+
+int main() {
+
+    fsm::State s1("s1"), s2("s2");
+    std::vector<fsm::State> states = {s1, s2};
+    std::vector<int> alphabet = {0, 1};
+    fsm::State &final_state = s2;
+    std::vector<fsm::State> final_states = {final_state};
+    fsm::State &initial_state = s1;
+    std::vector<std::vector<fsm::State>> transition_table = {
+            {states[0], states[1]},
+            {states[1], states[0]},
+    };
+    fsm::FSM machine(states, alphabet, initial_state, final_states, transition_table);
+    std::cout << machine.evaluate("01101");
 
     return 0;
 }

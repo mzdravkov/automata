@@ -4,7 +4,7 @@
 
 fsm::String::String() : str_("") {}
 
-fsm::String::String(char *str) : str_(new char[strlen(str)]) {
+fsm::String::String(const char *str) : str_(new char[strlen(str)]) {
     std::strcpy(str_, str);
 }
 
@@ -72,6 +72,10 @@ bool fsm::String::operator<(const fsm::String &rhs) const {
         return false;
     }
     return true;
+}
+
+char fsm::String::operator[](unsigned int i) const {
+    return str_[i];
 }
 
 

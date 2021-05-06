@@ -171,3 +171,19 @@ void fsm::FSM::validate_final_states() const {
     }
 }
 
+bool fsm::FSM::evaluate(const char* input) {
+    bool flag = false;
+    fsm::String word(input);
+    int wordLen = word.size();
+
+    for(int i = 0; i < wordLen; i++){
+        FSM::transition(word[i] - '0'); // convert char to int
+    }
+
+    if(FSM::is_in_final_state()) flag = true;
+
+    FSM::restart();
+
+    return flag;
+}
+
