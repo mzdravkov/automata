@@ -15,15 +15,15 @@ int main() {
             {states[1], states[1]},
     };
     fsm::FSM machine(states, alphabet, initial_state, final_states, transition_table);
-    std::cout << "is in final state: " << machine.is_in_final_state() << "\n";
+    std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
     machine.transition(0);
-    std::cout << "is in final state: " << machine.is_in_final_state() << "\n";
+    std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
     machine.transition(1);
-    std::cout << "is in final state: " << machine.is_in_final_state() << "\n";
-    std::cout << "Current state: " << machine.get_current_state() << "\n";
-    std::cout << "Restarting" << "\n";
+    std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
+    std::cout << "Current state: " << machine.get_current_state() << std::endl;
+    std::cout << "Restarting" << std::endl;
     machine.restart();
-    std::cout << "Current state: " << machine.get_current_state() << "\n";
+    std::cout << "Current state: " << machine.get_current_state() << std::endl;
 
     fsm::State s3("s3");
     machine.add_state(s3);
@@ -32,8 +32,8 @@ int main() {
 
     machine.set_initial_state(s3);
     machine.transition(1);
-    std::cout << "Current state: " << machine.get_current_state() << "\n";
-    std::cout << "is in final state: " << machine.is_in_final_state() << "\n";
+    std::cout << "Current state: " << machine.get_current_state() << std::endl;
+    std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
 
     return 0;
 }
