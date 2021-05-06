@@ -187,3 +187,20 @@ bool fsm::FSM::evaluate(const char* input) {
     return flag;
 }
 
+fsm::FSM fsm::FSM::operator!() const {
+    int statesCount = get_states_count();
+    std::vector<fsm::State> newFinalStates;
+    fsm::FSM complementMachine = *this;
+
+    for(int i = 0; i < statesCount; i++){
+        if(std::find(final_states_.begin(),
+                     final_states_.end(),
+                     states_[i]) != final_states_.end()){
+            newFinalStates.push_back(states_[i]);
+        }
+    }
+
+    complementMachine.set_final_states(newFinalStates);
+
+    return complementMachine;
+}

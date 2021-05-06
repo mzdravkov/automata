@@ -73,6 +73,9 @@ namespace fsm {
         // Returns true if the word is recognised by the machine.
         bool evaluate(const char* word);
 
+        // Returns the compliment machine.
+        fsm::FSM operator!() const;
+
         // Returns the machine back to the initial state.
         void restart();
     private:
