@@ -53,6 +53,9 @@ namespace fsm {
         // Note: it automatically grows the transition table by adding a new row at the end.
         void add_state(const State& state);
 
+        // Adds a new final state.
+        void add_final_state(const State& state);
+
         // Adds a new symbol to the machine's alphabet.
         // Note: it automatically grows the transition table by adding a new column at the end.
         void add_symbol(int symbol);
@@ -76,9 +79,14 @@ namespace fsm {
         // Returns the compliment machine.
         fsm::FSM operator!() const;
 
+        // Returns a machine which is the intersection of the operands.
+        fsm::FSM operator&(const fsm::FSM &rhs) const;
+
         // Returns the machine back to the initial state.
         void restart();
     private:
+        FSM();
+
         // Validates that there are no duplicated states.
         void validate_states() const;
 
@@ -88,6 +96,8 @@ namespace fsm {
         // Validates that all final states are valid states in this machine.
         void validate_final_states() const;
     };
+
+    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = fsm::State());
 }
 
 #endif //AUTOMATA_FSM_H

@@ -4,6 +4,11 @@
 #include "fsm.h"
 #include "automation_exception.h"
 
+
+fsm::FSM::FSM() {
+
+}
+
 fsm::FSM::FSM(const std::vector<fsm::State> &states, const std::vector<int> &alphabet, const fsm::State &initial_state,
               const std::vector<fsm::State> &final_states, const std::vector<std::vector<fsm::State>> &transition_table)
         : states_(states),  alphabet_(alphabet), initial_state_(initial_state),
@@ -84,6 +89,10 @@ void fsm::FSM::add_symbol(int symbol) {
     for (std::vector<fsm::State> row : transition_table_) {
         row.resize(row.size() + 1);
     }
+}
+
+void fsm::FSM::add_final_state(const fsm::State &state) {
+    final_states_.push_back(state);
 }
 
 void fsm::FSM::add_transition_rule(const fsm::State &state, int symbol, const fsm::State &next_state) {
@@ -188,7 +197,7 @@ fsm::FSM fsm::FSM::operator!() const {
     std::vector<fsm::State> newFinalStates;
     fsm::FSM complementMachine = *this;
 
-    for(int i = 0, statesCount = get_states_count(); i < statesCount; i++){
+    for(int i = 0, sz = get_states_count(); i < sz; i++){
         if(std::find(final_states_.begin(),final_states_.end(),states_[i]) != final_states_.end()){
             newFinalStates.push_back(states_[i]);
         }
@@ -197,4 +206,36 @@ fsm::FSM fsm::FSM::operator!() const {
     complementMachine.set_final_states(newFinalStates);
 
     return complementMachine;
+}
+
+fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
+    fsm::FSM machineIntersect;
+
+    fsm::State comboState = get_current_state() + rhs.get_current_state();
+    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { machineIntersect.add_symbol(i); }
+    machineIntersect.add_state(comboState);
+    fsm::fill(*this, rhs, machineIntersect, comboState);
+    machineIntersect.set_initial_state(machineIntersect.states_[0]);
+    machineIntersect.restart();
+
+    return machineIntersect;
+}
+
+void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
+
+    for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
+        m1.transition(i);
+        m2.transition(i);
+
+        fsm::State comboState = m1.get_current_state() + m2.get_current_state();
+        auto m3States = m3.get_states();
+
+        if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
+            m3.add_state(comboState);
+            m3.add_transition_rule(prevState, i, comboState);
+            if(m1.is_in_final_state() || m2.is_in_final_state()) { m3.add_final_state(comboState); }
+            fsm::fill(m1, m2, m3, comboState);
+        }
+        m3.add_transition_rule(prevState, i, comboState);
+    }
 }

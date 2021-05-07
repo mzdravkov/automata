@@ -29,3 +29,7 @@ std::ostream &fsm::operator<<(std::ostream &os, const fsm::State &state) {
     return os;
 }
 
+fsm::State fsm::State::operator+(const fsm::State &rhs) const{
+    return fsm::State(name_ + rhs.name_);
+}
+
