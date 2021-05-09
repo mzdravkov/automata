@@ -82,6 +82,8 @@ namespace fsm {
         // Returns a machine which is the intersection of the operands.
         fsm::FSM operator&(const fsm::FSM &rhs) const;
 
+        std::ostream& ins(std::ostream &out) const;
+
         // Returns the machine back to the initial state.
         void restart();
     private:
@@ -96,6 +98,8 @@ namespace fsm {
         // Validates that all final states are valid states in this machine.
         void validate_final_states() const;
     };
+
+    std::ostream& operator<<(std::ostream &out, fsm::FSM &rhs);
 
     void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = fsm::State());
 }

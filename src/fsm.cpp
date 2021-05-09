@@ -4,6 +4,7 @@
 #include "fsm.h"
 #include "automation_exception.h"
 
+#include <iostream> // for debugging, remove later
 
 fsm::FSM::FSM() {
 
@@ -213,10 +214,12 @@ fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
 
     fsm::State comboState = get_current_state() + rhs.get_current_state();
     for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { machineIntersect.add_symbol(i); }
-    machineIntersect.add_state(comboState);
     fsm::fill(*this, rhs, machineIntersect, comboState);
     machineIntersect.set_initial_state(machineIntersect.states_[0]);
     machineIntersect.restart();
+
+    std::cout << "======== FINAL ========" << std::endl;
+    std::cout << machineIntersect << std::endl;
 
     return machineIntersect;
 }
@@ -224,18 +227,46 @@ fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
 void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
 
     for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
+
         m1.transition(i);
         m2.transition(i);
 
         fsm::State comboState = m1.get_current_state() + m2.get_current_state();
+        std::cout << "m1/m2 at: " << comboState << std::endl;
+        std::cout << "========================" << std::endl;
+
         auto m3States = m3.get_states();
 
         if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
             m3.add_state(comboState);
-            m3.add_transition_rule(prevState, i, comboState);
             if(m1.is_in_final_state() || m2.is_in_final_state()) { m3.add_final_state(comboState); }
             fsm::fill(m1, m2, m3, comboState);
         }
         m3.add_transition_rule(prevState, i, comboState);
+        std::cout << prevState << " -- " << i << " --> " << comboState << std::endl;
+        std::cout << m3 << std::endl;
+        std::cout << "========================" << std::endl;
+        prevState = comboState;
     }
+}
+
+std::ostream &fsm::FSM::ins(std::ostream &out) const {
+    int stateC = get_states_count(), alphaC = get_alphabet_count();
+    auto table = get_transition_table();
+    fsm::State st;
+
+    for(int i = 0; i < stateC; i++){
+        out << states_[i] << " | ";
+        for(int j = 0; j < alphaC; j++){
+            st = table[i][j];
+            out << st << "\t";
+        }
+        out << "\n";
+    }
+
+    return out;
+}
+
+std::ostream &fsm::operator<<(std::ostream &out, fsm::FSM &rhs) {
+    return rhs.ins(out);
 }

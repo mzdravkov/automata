@@ -38,25 +38,26 @@ void t1(){
 
 int main() {
 
-    fsm::State s1("s1"), s2("s2"), s3("s3"), s4("s4");
-    std::vector<fsm::State> states1 = {s1, s2};
-    std::vector<fsm::State> states2 = {s3, s4};
+    fsm::State s1("s1"), s2("s2"), s3("s3"), s4("s4"), s5("s5");
+    std::vector<fsm::State> states1 = {s1, s2, s3};
+    std::vector<fsm::State> states2 = {s4, s5};
 
     std::vector<int> alphabet = {0, 1};
 
-    fsm::State &initial_state1 = s1, &initial_state2 = s3;
-    fsm::State &final_state1 = s2, &final_state2 = s4;
+    fsm::State &initial_state1 = s1, &initial_state2 = s4;
+    fsm::State &final_state1 = s3, &final_state2 = s5;
 
     std::vector<fsm::State> final_states1 = {final_state1};
     std::vector<fsm::State> final_states2 = {final_state2};
 
     std::vector<std::vector<fsm::State>> transition_table1 = {
-            {states1[0], states1[1]},
-            {states1[1], states1[0]}
+            {states1[2], states1[1]},
+            {states1[2], states1[0]},
+            {states1[1], states1[2]},
     };
     std::vector<std::vector<fsm::State>> transition_table2 = {
             {states2[0], states2[1]},
-            {states2[1], states2[1]}
+            {states2[1], states2[0]}
     };
 
     fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
