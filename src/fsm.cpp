@@ -4,8 +4,6 @@
 #include "fsm.h"
 #include "automation_exception.h"
 
-#include <iostream> // for debugging, remove later
-
 fsm::FSM::FSM() {
 
 }
@@ -210,32 +208,27 @@ fsm::FSM fsm::FSM::operator!() const {
 }
 
 fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
-    fsm::FSM machineIntersect;
+    fsm::FSM intersectionMachine;  // Initiate empty machine.
+    fsm::State comboState = get_current_state() + rhs.get_current_state();  // Get the initial state.
 
-    fsm::State comboState = get_current_state() + rhs.get_current_state();
-    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { machineIntersect.add_symbol(i); }
-    fsm::fill(*this, rhs, machineIntersect, comboState);
-    machineIntersect.set_initial_state(machineIntersect.states_[0]);
-    machineIntersect.restart();
+    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { intersectionMachine.add_symbol(i); }  // Add the alphabet.
 
-    std::cout << "======== FINAL ========" << std::endl;
-    std::cout << machineIntersect << std::endl;
+    fsm::fill(*this, rhs, intersectionMachine, comboState);
+    intersectionMachine.set_initial_state(comboState);
+    intersectionMachine.restart();
 
-    return machineIntersect;
+    return intersectionMachine;
 }
 
 void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
-
     for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
+        auto m1old = m1, m2old = m2;
+        auto m3States = m3.get_states();
 
         m1.transition(i);
         m2.transition(i);
 
         fsm::State comboState = m1.get_current_state() + m2.get_current_state();
-        std::cout << "m1/m2 at: " << comboState << std::endl;
-        std::cout << "========================" << std::endl;
-
-        auto m3States = m3.get_states();
 
         if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
             m3.add_state(comboState);
@@ -243,10 +236,8 @@ void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
             fsm::fill(m1, m2, m3, comboState);
         }
         m3.add_transition_rule(prevState, i, comboState);
-        std::cout << prevState << " -- " << i << " --> " << comboState << std::endl;
-        std::cout << m3 << std::endl;
-        std::cout << "========================" << std::endl;
-        prevState = comboState;
+        m1 = m1old;
+        m2 = m2old;
     }
 }
 
@@ -267,6 +258,6 @@ std::ostream &fsm::FSM::ins(std::ostream &out) const {
     return out;
 }
 
-std::ostream &fsm::operator<<(std::ostream &out, fsm::FSM &rhs) {
+std::ostream &fsm::operator<<(std::ostream &out, const fsm::FSM &rhs) {
     return rhs.ins(out);
 }

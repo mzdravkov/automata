@@ -1,6 +1,7 @@
 #ifndef AUTOMATA_FSM_H
 #define AUTOMATA_FSM_H
 
+#include <ostream>
 #include <vector>
 
 #include "state.h"
@@ -99,9 +100,9 @@ namespace fsm {
         void validate_final_states() const;
     };
 
-    std::ostream& operator<<(std::ostream &out, fsm::FSM &rhs);
+    std::ostream& operator<<(std::ostream &out, const fsm::FSM &rhs);
 
-    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = fsm::State());
+    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState);
 }
 
 #endif //AUTOMATA_FSM_H
