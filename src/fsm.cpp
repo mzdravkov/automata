@@ -210,10 +210,11 @@ fsm::FSM fsm::FSM::operator!() const {
 fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
     fsm::FSM intersectionMachine;  // Initiate empty machine.
     fsm::State comboState = get_current_state() + rhs.get_current_state();  // Get the initial state.
-
     for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { intersectionMachine.add_symbol(i); }  // Add the alphabet.
+    intersectionMachine.add_state(comboState);
 
     fsm::fill(*this, rhs, intersectionMachine, comboState);
+
     intersectionMachine.set_initial_state(comboState);
     intersectionMachine.restart();
 
@@ -256,6 +257,13 @@ std::ostream &fsm::FSM::ins(std::ostream &out) const {
     }
 
     return out;
+}
+
+fsm::FSM fsm::FSM::operator|(const fsm::FSM &rhs) const {
+    fsm::FSM unionMachine = *this & rhs;
+
+
+    return unionMachine;
 }
 
 std::ostream &fsm::operator<<(std::ostream &out, const fsm::FSM &rhs) {

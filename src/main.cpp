@@ -62,7 +62,7 @@ void t2(){
     fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
     fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
-    std::cout << (machine1 & machine2).evaluate("10110") << std::endl;
+    std::cout << (machine1 & machine2) << std::endl;
 }
 
 void t3() {
@@ -93,8 +93,47 @@ void t3() {
     std::cout << (machine1 & machine2) << std::endl;
 }
 
+void t4(){
+    fsm::State s1("s1"), s2("s2"), s3("s3"), s4("s4"), s5("s5"), s6("s6");
+    std::vector<fsm::State> states1 = {s1, s2, s3};
+    std::vector<fsm::State> states2 = {s4, s5, s6};
+
+    std::vector<int> alphabet = {0, 1};
+
+    fsm::State &initial_state1 = s1, &initial_state2 = s4;
+    fsm::State &final_state1 = s3, &final_state2 = s6;
+
+    std::vector<fsm::State> final_states1 = {final_state1};
+    std::vector<fsm::State> final_states2 = {final_state2};
+
+    std::vector<std::vector<fsm::State>> transition_table1 = {
+            {states1[1], states1[0]},
+            {states1[2], states1[0]},
+            {states1[2], states1[2]}
+    };
+    std::vector<std::vector<fsm::State>> transition_table2 = {
+            {states2[0], states2[1]},
+            {states2[0], states2[2]},
+            {states2[2], states2[2]}
+    };
+
+    fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
+    fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
+
+    std::cout << machine1.evaluate("01100") << std::endl;  // Recognises words containing "00".
+    std::cout << !machine2.evaluate("010011") << std::endl;  // Recognises words containing "11".
+
+    // Recognises words containing "00", or "11".
+    std::cout << (machine1 & !machine2).evaluate("0101010") << std::endl;
+    std::cout << (machine1 & !machine2).evaluate("11010") << std::endl;
+}
+
 int main() {
 
+    //t1();
+    //t2();
+    //t3();
+    t4();
 
     return 0;
 }

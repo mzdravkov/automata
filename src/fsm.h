@@ -1,7 +1,7 @@
 #ifndef AUTOMATA_FSM_H
 #define AUTOMATA_FSM_H
 
-#include <ostream>
+#include <iostream>
 #include <vector>
 
 #include "state.h"
@@ -83,6 +83,9 @@ namespace fsm {
         // Returns a machine which is the intersection of the operands.
         fsm::FSM operator&(const fsm::FSM &rhs) const;
 
+        // Returns a machine which is the union of the operands.
+        fsm::FSM operator|(const fsm::FSM &rhs) const;
+
         std::ostream& ins(std::ostream &out) const;
 
         // Returns the machine back to the initial state.
@@ -102,7 +105,7 @@ namespace fsm {
 
     std::ostream& operator<<(std::ostream &out, const fsm::FSM &rhs);
 
-    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState);
+    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = State());
 }
 
 #endif //AUTOMATA_FSM_H
