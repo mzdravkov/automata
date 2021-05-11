@@ -120,12 +120,17 @@ void t4(){
     fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
     fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
-    std::cout << machine1.evaluate("01100") << std::endl;  // Recognises words containing "00".
-    std::cout << !machine2.evaluate("010011") << std::endl;  // Recognises words containing "11".
+    std::cout << machine1.evaluate("01001") << std::endl;  // Recognises words containing "00".
+    std::cout << machine2.evaluate("010011") << std::endl;  // Recognises words containing "11".
+    std::cout << !machine2.evaluate("010011") << std::endl;  // Recognises words NOT containing "11".
 
-    // Recognises words containing "00", or "11".
-    std::cout << (machine1 & !machine2).evaluate("0101010") << std::endl;
-    std::cout << (machine1 & !machine2).evaluate("11010") << std::endl;
+    // Recognises words containing "00" OR "11".
+    std::cout << (machine1 & machine2).evaluate("0101010") << std::endl;
+    std::cout << (machine1 & machine2).evaluate("11010") << std::endl;
+
+    // Recognises words containing "00" AND NOT "11".
+    std::cout << (machine1 | !machine2).evaluate("100110") << std::endl;
+    std::cout << (machine1 | !machine2).evaluate("010010") << std::endl;
 }
 
 int main() {

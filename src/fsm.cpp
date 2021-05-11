@@ -197,7 +197,7 @@ fsm::FSM fsm::FSM::operator!() const {
     fsm::FSM complementMachine = *this;
 
     for(int i = 0, sz = get_states_count(); i < sz; i++){
-        if(std::find(final_states_.begin(),final_states_.end(),states_[i]) != final_states_.end()){
+        if(std::find(final_states_.begin(),final_states_.end(),states_[i]) == final_states_.end()){
             newFinalStates.push_back(states_[i]);
         }
     }
@@ -261,7 +261,22 @@ std::ostream &fsm::FSM::ins(std::ostream &out) const {
 
 fsm::FSM fsm::FSM::operator|(const fsm::FSM &rhs) const {
     fsm::FSM unionMachine = *this & rhs;
+    auto thisFinalStates = get_final_states();
+    auto otherFinalStates = rhs.get_final_states();
+    auto unionEndStates = unionMachine.get_final_states();
+    std::vector<fsm::State> newEndStates;
 
+
+    for(int i = 0, sz1 = get_final_states_count(); i < sz1; i++){
+        for(int j = 0, sz2 = rhs.get_final_states_count(); j < sz2; j++){
+            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];
+            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){
+                newEndStates.push_back(doubleEndState);
+            }
+        }
+    }
+
+    unionMachine.set_final_states(newEndStates);
 
     return unionMachine;
 }
