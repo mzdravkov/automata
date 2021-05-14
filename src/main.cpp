@@ -98,7 +98,7 @@ void t4(){
     std::vector<fsm::State> states1 = {s1, s2, s3};
     std::vector<fsm::State> states2 = {s4, s5, s6};
 
-    std::vector<int> alphabet = {0, 1};
+    std::vector<int> alphabet = {0, 7};
 
     fsm::State &initial_state1 = s1, &initial_state2 = s4;
     fsm::State &final_state1 = s3, &final_state2 = s6;
@@ -120,17 +120,17 @@ void t4(){
     fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
     fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
-    std::cout << machine1.evaluate("01001") << std::endl;  // Recognises words containing "00".
-    std::cout << machine2.evaluate("01101") << std::endl;  // Recognises words containing "11".
-    std::cout << !machine2.evaluate("11001") << std::endl;  // Recognises words NOT containing "11".
+    std::cout << machine1.evaluate("07007") << std::endl;  // Recognises words containing "00".
+    std::cout << machine2.evaluate("07707") << std::endl;  // Recognises words containing "77".
+    std::cout << !machine2.evaluate("77007") << std::endl;  // Recognises words NOT containing "77".
 
-    // Recognises words containing "00" OR "11".
-    std::cout << (machine1 | machine2).evaluate("01010") << std::endl;
-    std::cout << (machine1 | machine2).evaluate("11010") << std::endl;
+    // Recognises words containing "00" OR "77".
+    std::cout << (machine1 | machine2).evaluate("07070") << std::endl;
+    std::cout << (machine1 | machine2).evaluate("77070") << std::endl;
 
-    // Recognises words containing "00" AND NOT "11".
-    std::cout << (machine1 & !machine2).evaluate("100110") << std::endl;
-    std::cout << (machine1 & !machine2).evaluate("010010") << std::endl;
+    // Recognises words containing "00" AND NOT "77".
+    std::cout << (machine1 & !machine2).evaluate("700770") << std::endl;
+    std::cout << (machine1 & !machine2).evaluate("070070") << std::endl;
 }
 
 int main() {
