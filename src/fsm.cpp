@@ -207,27 +207,33 @@ fsm::FSM fsm::FSM::operator!() const {
     return complementMachine;
 }
 
-fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
-    fsm::FSM intersectionMachine;  // Initiate empty machine.
-    fsm::State comboState = get_current_state() + rhs.get_current_state();  // Get the initial state.
-    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { intersectionMachine.add_symbol(i); }  // Add the alphabet.
-    intersectionMachine.add_state(comboState);
+fsm::FSM fsm::FSM::operator|(const fsm::FSM &rhs) const {
+    fsm::FSM unionMachine, thisMachine = *this, otherMachine = rhs;
+    thisMachine.restart();
+    otherMachine.restart();
 
-    fsm::fill(*this, rhs, intersectionMachine, comboState);
+    fsm::State comboState = thisMachine.get_initial_state() + otherMachine.get_initial_state();  // Get the initial state.
 
-    intersectionMachine.set_initial_state(comboState);
-    intersectionMachine.restart();
+    auto alphabet = get_alphabet();
+    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { unionMachine.add_symbol(alphabet[i]); }  // Add the alphabet.
+    unionMachine.add_state(comboState);
 
-    return intersectionMachine;
+    fsm::fill(thisMachine, otherMachine, unionMachine, comboState);
+
+    unionMachine.set_initial_state(comboState);
+    unionMachine.restart();
+
+    return unionMachine;
 }
 
 void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
     for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
         auto m1old = m1, m2old = m2;
         auto m3States = m3.get_states();
+        char currLetter = m3.get_alphabet()[i];
 
-        m1.transition(i);
-        m2.transition(i);
+        m1.transition(currLetter);
+        m2.transition(currLetter);
 
         fsm::State comboState = m1.get_current_state() + m2.get_current_state();
 
@@ -236,10 +242,32 @@ void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
             if(m1.is_in_final_state() || m2.is_in_final_state()) { m3.add_final_state(comboState); }
             fsm::fill(m1, m2, m3, comboState);
         }
-        m3.add_transition_rule(prevState, i, comboState);
+        m3.add_transition_rule(prevState, currLetter, comboState);
         m1 = m1old;
         m2 = m2old;
     }
+}
+
+
+fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
+    std::vector<fsm::State> newEndStates;
+    fsm::FSM intersectionMachine = *this | rhs;
+    auto thisFinalStates = get_final_states();
+    auto otherFinalStates = rhs.get_final_states();
+    auto unionEndStates = intersectionMachine.get_final_states();
+
+    for(int i = 0, sz1 = get_final_states_count(); i < sz1; i++){
+        for(int j = 0, sz2 = rhs.get_final_states_count(); j < sz2; j++){
+            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];
+            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){
+                newEndStates.push_back(doubleEndState);
+            }
+        }
+    }
+
+    intersectionMachine.set_final_states(newEndStates);
+
+    return intersectionMachine;
 }
 
 std::ostream &fsm::FSM::ins(std::ostream &out) const {
@@ -257,28 +285,6 @@ std::ostream &fsm::FSM::ins(std::ostream &out) const {
     }
 
     return out;
-}
-
-fsm::FSM fsm::FSM::operator|(const fsm::FSM &rhs) const {
-    fsm::FSM unionMachine = *this & rhs;
-    auto thisFinalStates = get_final_states();
-    auto otherFinalStates = rhs.get_final_states();
-    auto unionEndStates = unionMachine.get_final_states();
-    std::vector<fsm::State> newEndStates;
-
-
-    for(int i = 0, sz1 = get_final_states_count(); i < sz1; i++){
-        for(int j = 0, sz2 = rhs.get_final_states_count(); j < sz2; j++){
-            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];
-            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){
-                newEndStates.push_back(doubleEndState);
-            }
-        }
-    }
-
-    unionMachine.set_final_states(newEndStates);
-
-    return unionMachine;
 }
 
 std::ostream &fsm::operator<<(std::ostream &out, const fsm::FSM &rhs) {
