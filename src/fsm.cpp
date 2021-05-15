@@ -265,10 +265,16 @@ fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
         }
     }
 
-    auto intersectionMachine = unionMachine;
-    intersectionMachine.set_final_states(newEndStates);
+      // There is no op= or copy constructor.
 
-    return intersectionMachine;
+//    fsm::FSM intersectionMachine = unionMachine;
+//    intersectionMachine.set_final_states(newEndStates);
+//
+//    return intersectionMachine;
+
+    unionMachine.set_final_states(newEndStates);
+    return unionMachine;
+
 }
 
 std::ostream &fsm::FSM::ins(std::ostream &out) const {

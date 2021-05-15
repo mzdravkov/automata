@@ -22,6 +22,9 @@ namespace fsm {
 
         ~FSM();
 
+        // add operator ==
+        // add copy constructor
+
         int get_states_count() const;
 
         const std::vector<fsm::State> &get_states() const;
