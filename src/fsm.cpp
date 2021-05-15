@@ -251,20 +251,21 @@ void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
 
 fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
     std::vector<fsm::State> newEndStates;
-    fsm::FSM intersectionMachine = *this | rhs;
-    auto thisFinalStates = get_final_states();
-    auto otherFinalStates = rhs.get_final_states();
-    auto unionEndStates = intersectionMachine.get_final_states();
+    fsm::FSM unionMachine = *this | rhs;
+    auto thisFinalStates = get_final_states();  // get sub-final states
+    auto otherFinalStates = rhs.get_final_states(); // get sub-final states
+    auto unionEndStates = unionMachine.get_final_states();
 
     for(int i = 0, sz1 = get_final_states_count(); i < sz1; i++){
         for(int j = 0, sz2 = rhs.get_final_states_count(); j < sz2; j++){
-            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];
-            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){
+            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];  // construct final state of two sub-final states
+            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){  // check if such final state exists
                 newEndStates.push_back(doubleEndState);
             }
         }
     }
 
+    auto intersectionMachine = unionMachine;
     intersectionMachine.set_final_states(newEndStates);
 
     return intersectionMachine;
