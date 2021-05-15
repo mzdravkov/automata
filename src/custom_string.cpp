@@ -4,7 +4,7 @@
 
 fsm::String::String() : str_("") {}
 
-fsm::String::String(char *str) : str_(new char[strlen(str)]) {
+fsm::String::String(const char *str) : str_(new char[strlen(str)+1]) {
     std::strcpy(str_, str);
 }
 
@@ -14,7 +14,7 @@ fsm::String::String(int n) {
     sprintf(str_, "%d", n);
 }
 
-fsm::String::String(const fsm::String &other) : str_(new char[strlen(other.str_)]) {
+fsm::String::String(const fsm::String &other) : str_(new char[strlen(other.str_)+1]) {
     std::strcpy(str_, other.str_);
 }
 
@@ -72,6 +72,10 @@ bool fsm::String::operator<(const fsm::String &rhs) const {
         return false;
     }
     return true;
+}
+
+char fsm::String::operator[](unsigned int i) const {
+    return str_[i];
 }
 
 

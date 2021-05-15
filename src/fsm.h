@@ -1,6 +1,7 @@
 #ifndef AUTOMATA_FSM_H
 #define AUTOMATA_FSM_H
 
+#include <iostream>
 #include <vector>
 
 #include "state.h"
@@ -20,6 +21,9 @@ namespace fsm {
             const std::vector<std::vector<fsm::State>> &transitionTable);
 
         ~FSM();
+
+        // add operator ==
+        // add copy constructor
 
         int get_states_count() const;
 
@@ -53,6 +57,9 @@ namespace fsm {
         // Note: it automatically grows the transition table by adding a new row at the end.
         void add_state(const State& state);
 
+        // Adds a new final state.
+        void add_final_state(const State& state);
+
         // Adds a new symbol to the machine's alphabet.
         // Note: it automatically grows the transition table by adding a new column at the end.
         void add_symbol(int symbol);
@@ -70,9 +77,25 @@ namespace fsm {
         // Returns true if the current state is a final state.
         bool is_in_final_state() const;
 
+        // Returns true if the word is recognised by the machine.
+        bool evaluate(const char* word);
+
+        // Returns the compliment machine.
+        fsm::FSM operator!() const;
+
+        // Returns a machine which is the intersection of the operands.
+        fsm::FSM operator&(const fsm::FSM &rhs) const;
+
+        // Returns a machine which is the union of the operands.
+        fsm::FSM operator|(const fsm::FSM &rhs) const;
+
+        std::ostream& ins(std::ostream &out) const;
+
         // Returns the machine back to the initial state.
         void restart();
     private:
+        FSM();
+
         // Validates that there are no duplicated states.
         void validate_states() const;
 
@@ -82,6 +105,10 @@ namespace fsm {
         // Validates that all final states are valid states in this machine.
         void validate_final_states() const;
     };
+
+    std::ostream& operator<<(std::ostream &out, const fsm::FSM &rhs);
+
+    void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = State());
 }
 
 #endif //AUTOMATA_FSM_H

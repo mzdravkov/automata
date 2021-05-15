@@ -4,6 +4,10 @@
 #include "fsm.h"
 #include "automation_exception.h"
 
+fsm::FSM::FSM() {
+
+}
+
 fsm::FSM::FSM(const std::vector<fsm::State> &states, const std::vector<int> &alphabet, const fsm::State &initial_state,
               const std::vector<fsm::State> &final_states, const std::vector<std::vector<fsm::State>> &transition_table)
         : states_(states),  alphabet_(alphabet), initial_state_(initial_state),
@@ -84,6 +88,10 @@ void fsm::FSM::add_symbol(int symbol) {
     for (std::vector<fsm::State> row : transition_table_) {
         row.resize(row.size() + 1);
     }
+}
+
+void fsm::FSM::add_final_state(const fsm::State &state) {
+    final_states_.push_back(state);
 }
 
 void fsm::FSM::add_transition_rule(const fsm::State &state, int symbol, const fsm::State &next_state) {
@@ -171,3 +179,121 @@ void fsm::FSM::validate_final_states() const {
     }
 }
 
+bool fsm::FSM::evaluate(const char* input) {
+    fsm::String word(input);
+
+    for(int i = 0, l = word.size(); i < l; i++){
+        FSM::transition(word[i] - '0'); // convert char to int
+    }
+
+    bool flag = FSM::is_in_final_state();
+    FSM::restart();
+
+    return flag;
+}
+
+fsm::FSM fsm::FSM::operator!() const {
+    std::vector<fsm::State> newFinalStates;
+    fsm::FSM complementMachine = *this;
+
+    for(int i = 0, sz = get_states_count(); i < sz; i++){
+        if(std::find(final_states_.begin(),final_states_.end(),states_[i]) == final_states_.end()){
+            newFinalStates.push_back(states_[i]);
+        }
+    }
+
+    complementMachine.set_final_states(newFinalStates);
+
+    return complementMachine;
+}
+
+fsm::FSM fsm::FSM::operator|(const fsm::FSM &rhs) const {
+    fsm::FSM unionMachine, thisMachine = *this, otherMachine = rhs;
+    thisMachine.restart();
+    otherMachine.restart();
+
+    fsm::State comboState = thisMachine.get_initial_state() + otherMachine.get_initial_state();  // Get the initial state.
+
+    auto alphabet = get_alphabet();
+    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { unionMachine.add_symbol(alphabet[i]); }  // Add the alphabet.
+    unionMachine.add_state(comboState);
+
+    fsm::fill(thisMachine, otherMachine, unionMachine, comboState);
+
+    unionMachine.set_initial_state(comboState);
+    unionMachine.restart();
+
+    return unionMachine;
+}
+
+void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
+    for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
+        auto m1old = m1, m2old = m2;
+        auto m3States = m3.get_states();
+        char currLetter = m3.get_alphabet()[i];
+
+        m1.transition(currLetter);
+        m2.transition(currLetter);
+
+        fsm::State comboState = m1.get_current_state() + m2.get_current_state();
+
+        if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
+            m3.add_state(comboState);
+            if(m1.is_in_final_state() || m2.is_in_final_state()) { m3.add_final_state(comboState); }
+            fsm::fill(m1, m2, m3, comboState);
+        }
+        m3.add_transition_rule(prevState, currLetter, comboState);
+        m1 = m1old;
+        m2 = m2old;
+    }
+}
+
+
+fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
+    std::vector<fsm::State> newEndStates;
+    fsm::FSM unionMachine = *this | rhs;
+    auto thisFinalStates = get_final_states();  // get sub-final states
+    auto otherFinalStates = rhs.get_final_states(); // get sub-final states
+    auto unionEndStates = unionMachine.get_final_states();
+
+    for(int i = 0, sz1 = get_final_states_count(); i < sz1; i++){
+        for(int j = 0, sz2 = rhs.get_final_states_count(); j < sz2; j++){
+            fsm::State doubleEndState = thisFinalStates[i] + otherFinalStates[j];  // construct final state of two sub-final states
+            if(std::find(unionEndStates.begin(), unionEndStates.end(), doubleEndState) != unionEndStates.end()){  // check if such final state exists
+                newEndStates.push_back(doubleEndState);
+            }
+        }
+    }
+
+      // There is no op= or copy constructor.
+
+//    fsm::FSM intersectionMachine = unionMachine;
+//    intersectionMachine.set_final_states(newEndStates);
+//
+//    return intersectionMachine;
+
+    unionMachine.set_final_states(newEndStates);
+    return unionMachine;
+
+}
+
+std::ostream &fsm::FSM::ins(std::ostream &out) const {
+    int stateC = get_states_count(), alphaC = get_alphabet_count();
+    auto table = get_transition_table();
+    fsm::State st;
+
+    for(int i = 0; i < stateC; i++){
+        out << states_[i] << " | ";
+        for(int j = 0; j < alphaC; j++){
+            st = table[i][j];
+            out << st << "\t";
+        }
+        out << "\n";
+    }
+
+    return out;
+}
+
+std::ostream &fsm::operator<<(std::ostream &out, const fsm::FSM &rhs) {
+    return rhs.ins(out);
+}

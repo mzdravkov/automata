@@ -24,6 +24,8 @@ namespace fsm {
 
         bool operator!=(const State &rhs) const;
 
+        State operator+(const State &rhs) const;
+
         friend std::ostream &operator<<(std::ostream &os, const State &state);
     };
 }
