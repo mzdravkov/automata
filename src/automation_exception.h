@@ -1,8 +1,8 @@
 #ifndef AUTOMATA_AUTOMATION_EXCEPTION_H
 #define AUTOMATA_AUTOMATION_EXCEPTION_H
 
-#import <exception>
-#import "custom_string.h"
+#include <exception>
+#include "custom_string.h"
 
 namespace fsm {
     class AutomationException : public std::exception {
