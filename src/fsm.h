@@ -20,10 +20,11 @@ namespace fsm {
             const State &initialState, const std::vector<fsm::State> &finalStates,
             const std::vector<std::vector<fsm::State>> &transitionTable);
 
+        FSM(const fsm::FSM& rhs);
+
         ~FSM();
 
-        // add operator ==
-        // add copy constructor
+        fsm::FSM& operator=(const fsm::FSM& rhs);
 
         int get_states_count() const;
 

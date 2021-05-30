@@ -8,14 +8,45 @@ fsm::FSM::FSM() {
 
 }
 
-fsm::FSM::FSM(const std::vector<fsm::State> &states, const std::vector<int> &alphabet, const fsm::State &initial_state,
-              const std::vector<fsm::State> &final_states, const std::vector<std::vector<fsm::State>> &transition_table)
-        : states_(states),  alphabet_(alphabet), initial_state_(initial_state),
-          final_states_(final_states), transition_table_(transition_table) {
+fsm::FSM::FSM(const std::vector<fsm::State> &states, 
+    const std::vector<int> &alphabet, 
+    const fsm::State &initial_state,
+    const std::vector<fsm::State> &final_states, 
+    const std::vector<std::vector<fsm::State>> &transition_table)
+        : states_(states),
+    alphabet_(alphabet), 
+    initial_state_(initial_state),
+    final_states_(final_states),
+    transition_table_(transition_table)
+{
     current_state_ = &initial_state_;
     validate_states();
     validate_initial_state();
     validate_final_states();
+}
+
+fsm::FSM::FSM(const fsm::FSM& rhs) 
+    : states_(rhs.states_), 
+    alphabet_(rhs.alphabet_), 
+    initial_state_(rhs.initial_state_),
+    final_states_(rhs.final_states_), 
+    transition_table_(rhs.transition_table_)
+{
+    current_state_ = rhs.current_state_;
+}
+
+fsm::FSM& fsm::FSM::operator=(const fsm::FSM& rhs)
+{
+    if (this != &rhs) {
+        states_ = rhs.states_;
+        alphabet_ = rhs.alphabet_;
+        initial_state_ = rhs.initial_state_;
+        final_states_ = rhs.final_states_;
+        transition_table_ = rhs.transition_table_;
+        current_state_ = rhs.current_state_;
+    }
+
+    return *this;
 }
 
 fsm::FSM::~FSM() = default;
@@ -248,7 +279,6 @@ void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
     }
 }
 
-
 fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
     std::vector<fsm::State> newEndStates;
     fsm::FSM unionMachine = *this | rhs;
@@ -265,16 +295,10 @@ fsm::FSM fsm::FSM::operator&(const fsm::FSM &rhs) const {
         }
     }
 
-      // There is no op= or copy constructor.
+    fsm::FSM intersectionMachine = unionMachine;
+    intersectionMachine.set_final_states(newEndStates);
 
-//    fsm::FSM intersectionMachine = unionMachine;
-//    intersectionMachine.set_final_states(newEndStates);
-//
-//    return intersectionMachine;
-
-    unionMachine.set_final_states(newEndStates);
-    return unionMachine;
-
+    return intersectionMachine;
 }
 
 std::ostream &fsm::FSM::ins(std::ostream &out) const {

@@ -14,7 +14,11 @@ namespace fsm {
 
         State(const fsm::String& name);
 
+        State(const State& rhs);
+
         ~State();
+
+        State& operator=(const State& rhs);
 
         fsm::String get_name() const;
 
