@@ -6,7 +6,18 @@ fsm::State::State() {
 
 fsm::State::State(const fsm::String& name) : name_(name) {}
 
+fsm::State::State(const State& rhs) : name_(rhs.name_) {}
+
 fsm::State::~State() = default;
+
+fsm::State& fsm::State::operator=(const State & rhs)
+{
+    if (this != &rhs) {
+        name_ = rhs.name_;
+    }
+
+    return *this;
+}
 
 fsm::String fsm::State::get_name() const {
     return name_;

@@ -10,14 +10,47 @@ fsm::FSM<T>::FSM() {
 }
 
 template <typename T>
-fsm::FSM<T>::FSM(const std::vector<fsm::State> &states, const std::vector<T> &alphabet, const fsm::State &initial_state,
-              const std::vector<fsm::State> &final_states, const std::vector<std::vector<fsm::State>> &transition_table)
-        : states_(states),  alphabet_(alphabet), initial_state_(initial_state),
-          final_states_(final_states), transition_table_(transition_table) {
+fsm::FSM<T>::FSM(const std::vector<fsm::State> &states,
+    const std::vector<T> &alphabet,
+    const fsm::State &initial_state,
+    const std::vector<fsm::State> &final_states,
+    const std::vector<std::vector<fsm::State>> &transition_table)
+        : states_(states),
+    alphabet_(alphabet),
+    initial_state_(initial_state),
+    final_states_(final_states),
+    transition_table_(transition_table)
+{
     current_state_ = &initial_state_;
     validate_states();
     validate_initial_state();
     validate_final_states();
+}
+
+template <typename T>
+fsm::FSM<T>::FSM(const fsm::FSM<T>& rhs)
+    : states_(rhs.states_),
+    alphabet_(rhs.alphabet_),
+    initial_state_(rhs.initial_state_),
+    final_states_(rhs.final_states_),
+    transition_table_(rhs.transition_table_)
+{
+    current_state_ = rhs.current_state_;
+}
+
+template <typename T>
+fsm::FSM<T>& fsm::FSM<T>::operator=(const fsm::FSM<T>& rhs)
+{
+    if (this != &rhs) {
+        states_ = rhs.states_;
+        alphabet_ = rhs.alphabet_;
+        initial_state_ = rhs.initial_state_;
+        final_states_ = rhs.final_states_;
+        transition_table_ = rhs.transition_table_;
+        current_state_ = rhs.current_state_;
+    }
+
+    return *this;
 }
 
 template <typename T>
@@ -279,7 +312,6 @@ void fsm::fill(fsm::FSM<T> m1, fsm::FSM<T> m2, fsm::FSM<T> &m3, fsm::State prevS
     }
 }
 
-
 template <typename T>
 fsm::FSM<T> fsm::FSM<T>::operator&(const fsm::FSM<T> &rhs) const {
     std::vector<fsm::State> newEndStates;
@@ -297,16 +329,10 @@ fsm::FSM<T> fsm::FSM<T>::operator&(const fsm::FSM<T> &rhs) const {
         }
     }
 
-      // There is no op= or copy constructor.
+    fsm::FSM<T> intersectionMachine = unionMachine;
+    intersectionMachine.set_final_states(newEndStates);
 
-//    fsm::FSM<T> intersectionMachine = unionMachine;
-//    intersectionMachine.set_final_states(newEndStates);
-//
-//    return intersectionMachine;
-
-    unionMachine.set_final_states(newEndStates);
-    return unionMachine;
-
+    return intersectionMachine;
 }
 
 template <typename T>
