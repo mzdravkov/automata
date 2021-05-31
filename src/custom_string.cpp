@@ -2,7 +2,9 @@
 
 #include "custom_string.h"
 
-fsm::String::String() : str_("") {}
+fsm::String::String() : str_(new char[2]) {
+    strcpy(str_, "");
+}
 
 fsm::String::String(const char *str) : str_(new char[strlen(str)+1]) {
     std::strcpy(str_, str);
@@ -19,7 +21,7 @@ fsm::String::String(const fsm::String &other) : str_(new char[strlen(other.str_)
 }
 
 fsm::String::~String() {
-//    delete [] str_;
+    //delete str_; // str_ needs to be deleted, but if done so, shit hits the fan.
 }
 
 const char* fsm::String::to_char_array() const {
@@ -43,6 +45,26 @@ bool fsm::String::operator!=(const fsm::String &rhs) const {
 std::ostream &fsm::operator<<(std::ostream &os, const fsm::String &string) {
     os << string.str_;
     return os;
+}
+
+std::istream& fsm::String::ext(std::istream& in)
+{
+    const int maxL = 30;
+    char newStr[maxL];
+
+    in >> newStr;
+
+    delete str_;
+
+    str_ = new char[strlen(newStr) + 1];
+    strcpy(str_, newStr);
+
+    return in;
+}
+
+std::istream& fsm::operator>>(std::istream& in, String& s)
+{
+    return s.ext(in);
 }
 
 fsm::String fsm::String::operator+(const fsm::String &rhs) const {
@@ -74,7 +96,7 @@ bool fsm::String::operator<(const fsm::String &rhs) const {
     return true;
 }
 
-char fsm::String::operator[](unsigned int i) const {
+char fsm::String::operator[](unsigned i) const {
     return str_[i];
 }
 

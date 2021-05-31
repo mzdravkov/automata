@@ -16,9 +16,15 @@ namespace fsm {
         std::vector<std::vector<fsm::State>> transition_table_;
         fsm::State *current_state_;
     public:
+        FSM();
+
         FSM(const std::vector<fsm::State> &states, const std::vector<int> &alphabet,
             const State &initialState, const std::vector<fsm::State> &finalStates,
             const std::vector<std::vector<fsm::State>> &transitionTable);
+
+        // Construct machine from .txt file.
+        //FSM(const fsm::String& destPath);
+        FSM(const char* destPath);
 
         FSM(const fsm::FSM& rhs);
 
@@ -91,11 +97,18 @@ namespace fsm {
         fsm::FSM operator|(const fsm::FSM &rhs) const;
 
         std::ostream& ins(std::ostream &out) const;
+        std::ostream& fins(std::ostream& out) const;
+
+        std::istream& ext(std::istream& in);
+
+        // Build machine from .txt file.
+        fsm::FSM fromTXT(const char* sourcePath);
+
+        void toTXT(const char* dest) const;
 
         // Returns the machine back to the initial state.
         void restart();
     private:
-        FSM();
 
         unsigned indexOfState(const fsm::State& st) const;
 
@@ -110,6 +123,8 @@ namespace fsm {
     };
 
     std::ostream& operator<<(std::ostream &out, const fsm::FSM &rhs);
+
+    std::istream& operator>>(std::istream& in, fsm::FSM& rhs);
 
     void fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState = State());
 }
