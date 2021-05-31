@@ -32,7 +32,7 @@ fsm::FSM::FSM(const fsm::FSM& rhs)
     final_states_(rhs.final_states_), 
     transition_table_(rhs.transition_table_)
 {
-    current_state_ = rhs.current_state_;
+    current_state_ = &states_[indexOfState(*rhs.current_state_)];
 }
 
 fsm::FSM& fsm::FSM::operator=(const fsm::FSM& rhs)
@@ -43,7 +43,8 @@ fsm::FSM& fsm::FSM::operator=(const fsm::FSM& rhs)
         initial_state_ = rhs.initial_state_;
         final_states_ = rhs.final_states_;
         transition_table_ = rhs.transition_table_;
-        current_state_ = rhs.current_state_;
+
+        current_state_ = &states_[indexOfState(*rhs.current_state_)];
     }
 
     return *this;
@@ -165,6 +166,18 @@ void fsm::FSM::transition(int input) {
     current_state_ = &transition_table_[row][column];
 }
 
+unsigned fsm::FSM::indexOfState(const fsm::State& st) const
+{
+    unsigned i = 0;
+
+
+    while (i < states_.size() && states_[i] != st) {
+        i++;
+    }
+    
+    return i;
+}
+
 bool fsm::FSM::is_in_final_state() const {
     if (std::find(final_states_.begin(), final_states_.end(), *current_state_) != final_states_.end()) {
        return true;
@@ -270,7 +283,9 @@ void fsm::fill(fsm::FSM m1, fsm::FSM m2, fsm::FSM &m3, fsm::State prevState) {
 
         if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
             m3.add_state(comboState);
-            if(m1.is_in_final_state() || m2.is_in_final_state()) { m3.add_final_state(comboState); }
+            if(m1.is_in_final_state() || m2.is_in_final_state()) { 
+                m3.add_final_state(comboState); 
+            }
             fsm::fill(m1, m2, m3, comboState);
         }
         m3.add_transition_rule(prevState, currLetter, comboState);
