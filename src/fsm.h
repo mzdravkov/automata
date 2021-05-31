@@ -98,6 +98,8 @@ namespace fsm {
     private:
         FSM();
 
+        unsigned indexOfState(const fsm::State& st) const;
+
         // Validates that there are no duplicated states.
         void validate_states() const;
 
