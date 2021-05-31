@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "state.h"
 #include "fsm.h"
@@ -133,12 +134,53 @@ void t4(){
     std::cout << (machine1 & !machine2).evaluate("070070") << std::endl;
 }
 
+void t5() {
+
+    fsm::FSM<int> m1, m2;
+
+    std::cin >> m1 >> m2;
+
+    std::cout << m1 << std::endl;
+    std::cout << m2 << std::endl;
+
+    std::cout << (m1 | m2);
+}
+
+void t6() {
+    fsm::FSM<int> m1, m2;
+
+    std::ifstream f1("m1.txt");
+    std::ifstream f2("m2.txt");
+
+    f1 >> m1;
+    f2 >> m2;
+
+    std::cout << m1 << std::endl;
+    std::cout << m2 << std::endl;
+
+    std::cout << (m1 | m2);
+}
+
+void t7() {
+    fsm::FSM<int> m1("m1.txt"), m2;
+
+    m1.toTXT("m1Test.txt");
+    m2.fromTXT("m1Test.txt");
+
+    //these should be the same.
+    std::cout << m1 << std::endl;
+    std::cout << m2 << std::endl;
+}
+
 int main() {
 
     t1();
     t2();
     t3();
     t4();
+    //t5();
+    t6();
+    t7();
 
     return 0;
 }

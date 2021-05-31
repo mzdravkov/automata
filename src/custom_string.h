@@ -1,7 +1,7 @@
 #ifndef AUTOMATA_CUSTOM_STRING_H
 #define AUTOMATA_CUSTOM_STRING_H
 
-#include <ostream>
+#include <iostream>
 
 namespace fsm {
     // An inferior implementation of a String class
@@ -33,7 +33,12 @@ namespace fsm {
         bool operator<(const String &rhs) const;
 
         char operator[](unsigned i) const;
+
+        std::istream& ext(std::istream& in);
     };
+
+    std::istream& operator>>(std::istream& in, String& s);
+
 }
 
 #endif //AUTOMATA_CUSTOM_STRING_H

@@ -1,5 +1,6 @@
 #include <set>
 #include <algorithm>
+#include <fstream>
 
 #include "fsm.h"
 #include "automation_exception.h"
@@ -25,6 +26,13 @@ fsm::FSM<T>::FSM(const std::vector<fsm::State> &states,
     validate_states();
     validate_initial_state();
     validate_final_states();
+}
+
+template <typename T>
+fsm::FSM<T>::FSM(const char* destPath)
+{
+    std::ifstream f(destPath);
+    f >> *this;
 }
 
 template <typename T>
@@ -193,9 +201,11 @@ void fsm::FSM<T>::transition(T input) {
 template <typename T>
 unsigned fsm::FSM<T>::indexOfState(const fsm::State& st) const {
     unsigned i = 0;
-    while (i < states_.size() && states_[i] != st) {
+
+    while (i < states_.size() - 1 && !(states_[i] == st)) {
         i++;
     }
+
     return i;
 }
 
@@ -205,6 +215,24 @@ bool fsm::FSM<T>::is_in_final_state() const {
        return true;
     }
     return false;
+}
+
+template <typename T>
+fsm::FSM<T> fsm::FSM<T>::fromTXT(const char* sourcePath)
+{
+    std::ifstream inF(sourcePath);
+    inF >> *this;
+    inF.close();
+
+    return *this;
+}
+
+template <typename T>
+void fsm::FSM<T>::toTXT(const char* dest) const
+{
+    std::ofstream outF(dest);
+    outF << *this;
+    outF.close();
 }
 
 template <typename T>
@@ -366,8 +394,115 @@ std::ostream &fsm::FSM<T>::ins(std::ostream &out) const {
 }
 
 template <typename T>
+std::ostream& fsm::FSM<T>::fins(std::ostream& out) const {
+    int stateC = get_states_count(), alphaC = get_alphabet_count(), endSC = get_final_states_count();
+    fsm::State st;
+
+    out << alphaC;
+
+    for (int i = 0; i < alphaC; i++) {
+        out << " " << alphabet_[i] - '0';
+    }
+
+    out << "\n" << stateC;
+
+    for (int i = 0; i < stateC; i++) {
+        out << " " << states_[i].get_name();
+    }
+
+    out << "\n";
+    for (int i = 0; i < stateC; i++) {
+        for (int j = 0; j < alphaC; j++) {
+            out << transition_table_[i][j].get_name() << " ";
+            //if (j < alphaC - 1) { out << " "; }
+        }
+        out << "\n";
+    }
+
+    out << initial_state_.get_name() << "\n";
+    out << endSC;
+
+    for (int i = 0; i < endSC; i++) {
+        out << " " << final_states_[i].get_name();
+    }
+
+    return out;
+}
+
+template <typename T>
+std::istream& fsm::FSM<T>::ext(std::istream& in) {
+    unsigned int stateCount, alphaCount, endStateCount;
+    fsm::String stateName;
+    char letter;
+
+    if (typeid(in) == typeid(std::ifstream)) {
+        std::cout.setstate(std::ios_base::failbit);
+    }
+
+    // Bug: If states are added before symbols, the
+    // transition table does not resize.
+
+    std::cout << "Enter the number of letters: ";
+    in >> alphaCount;
+
+    for (int i = 0; i < alphaCount; i++) {
+        std::cout << "\nEnter letter " << i << " : ";
+        in >> letter;
+        add_symbol(letter);
+    }
+
+    std::cout << "\nEnter the number of states: ";
+    in >> stateCount;
+
+    for (int i = 0; i < stateCount; i++) {
+        std::cout << "\nEnter the name of state " << i << " : ";
+        in >> stateName;
+        add_state(fsm::State(stateName)); // tuk moje da ima problemi s anon object :(
+    }
+
+    for (int i = 0; i < stateCount; i++) {
+        for (int j = 0; j < alphaCount; j++) {
+            std::cout << "\nWhere does " << states_[i] << " go with letter \"" << char(alphabet_[j]) << "\" ?: ";
+            in >> stateName;
+            add_transition_rule(states_[i], alphabet_[j], states_[indexOfState(fsm::State(stateName))]);
+        }
+    }
+
+    std::cout << "\nEnter the starting state: ";
+    in >> stateName;
+    initial_state_ = states_[indexOfState(fsm::State(stateName))];
+
+    std::cout << "\nEnter the number of end-states: ";
+    in >> endStateCount;
+
+    for (int i = 0; i < endStateCount; i++) {
+        std::cout << "\nEnter name of end-state " << i << " : ";
+        in >> stateName;
+        add_final_state(states_[indexOfState(fsm::State(stateName))]);
+    }
+
+    current_state_ = &initial_state_;
+
+    validate_states();
+    validate_initial_state();
+    validate_final_states();
+
+    std::cout.clear();
+    return in;
+}
+
+template <typename T>
 std::ostream &fsm::operator<<(std::ostream &out, const fsm::FSM<T> &rhs) {
+    if (typeid(out) == typeid(std::ofstream)) {
+        return rhs.fins(out);
+    }
+
     return rhs.ins(out);
+}
+
+template <typename T>
+std::istream& fsm::operator>>(std::istream& in, fsm::FSM<T>& rhs) {
+    return rhs.ext(in);
 }
 
 

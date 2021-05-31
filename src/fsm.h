@@ -17,9 +17,15 @@ namespace fsm {
         std::vector<std::vector<fsm::State>> transition_table_;
         fsm::State *current_state_;
     public:
+        FSM();
+
         FSM(const std::vector<fsm::State> &states, const std::vector<T> &alphabet,
             const State &initialState, const std::vector<fsm::State> &finalStates,
             const std::vector<std::vector<fsm::State>> &transitionTable);
+
+        // Construct machine from .txt file.
+        //FSM(const fsm::String& destPath);
+        FSM(const char* destPath);
 
         FSM(const fsm::FSM<T>& rhs);
 
@@ -92,11 +98,18 @@ namespace fsm {
         fsm::FSM<T> operator|(const fsm::FSM<T> &rhs) const;
 
         std::ostream& ins(std::ostream &out) const;
+        std::ostream& fins(std::ostream& out) const;
+
+        std::istream& ext(std::istream& in);
+
+        // Build machine from .txt file.
+        fsm::FSM<T> fromTXT(const char* sourcePath);
+
+        void toTXT(const char* dest) const;
 
         // Returns the machine back to the initial state.
         void restart();
     private:
-        FSM();
 
         unsigned indexOfState(const fsm::State& st) const;
 
@@ -112,6 +125,9 @@ namespace fsm {
 
     template <typename T>
     std::ostream& operator<<(std::ostream &out, const fsm::FSM<T> &rhs);
+
+    template <typename T>
+    std::istream& operator>>(std::istream& in, fsm::FSM<T>& rhs);
 
     template <typename T>
     void fill(fsm::FSM<T> m1, fsm::FSM<T> m2, fsm::FSM<T> &m3, fsm::State prevState = State());
