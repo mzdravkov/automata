@@ -14,7 +14,7 @@ void t1(){
             {states[0], states[1]},
             {states[1], states[1]},
     };
-    fsm::FSM machine(states, alphabet, initial_state, final_states, transition_table);
+    fsm::FSM<int> machine(states, alphabet, initial_state, final_states, transition_table);
     std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
     machine.transition(0);
     std::cout << "is in final state: " << machine.is_in_final_state() << std::endl;
@@ -59,8 +59,8 @@ void t2(){
             {states2[1], states2[0]}
     };
 
-    fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
-    fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
+    fsm::FSM<int> machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
+    fsm::FSM<int> machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
     std::cout << (machine1 & machine2) << std::endl;
 }
@@ -87,8 +87,8 @@ void t3() {
             {states2[0], states2[1], states2[0]}
     };
 
-    fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
-    fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
+    fsm::FSM<int> machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
+    fsm::FSM<int> machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
     std::cout << (machine1 & machine2) << std::endl;
 }
@@ -117,8 +117,8 @@ void t4(){
             {states2[2], states2[2]}
     };
 
-    fsm::FSM machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
-    fsm::FSM machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
+    fsm::FSM<int> machine1(states1, alphabet, initial_state1, final_states1, transition_table1);
+    fsm::FSM<int> machine2(states2, alphabet, initial_state2, final_states2, transition_table2);
 
     std::cout << machine1.evaluate("07007") << std::endl;  // Recognises words containing "00".
     std::cout << machine2.evaluate("07707") << std::endl;  // Recognises words containing "77".
