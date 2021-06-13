@@ -21,5 +21,8 @@ ${BUILD}/custom_string.o: ${SOURCE}/custom_string.h ${SOURCE}/custom_string.cpp
 ${BUILD}/automation_exception.o: ${SOURCE}/automation_exception.h ${SOURCE}/automation_exception.cpp ${SOURCE}/custom_string.h
 	$(CC) $(CFLAGS) -o ${BUILD}/automation_exception.o -c ${SOURCE}/automation_exception.cpp -I./src
 
+documentation:
+	doxygen
+
 clean:
 	rm ${BUILD}/*

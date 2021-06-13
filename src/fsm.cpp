@@ -316,7 +316,10 @@ fsm::FSM<T> fsm::FSM<T>::operator|(const fsm::FSM<T> &rhs) const {
     fsm::State comboState = thisMachine.get_initial_state() + otherMachine.get_initial_state();  // Get the initial state.
 
     auto alphabet = get_alphabet();
-    for(int i = 0, sz = get_alphabet_count(); i < sz; i++) { unionMachine.add_symbol(alphabet[i]); }  // Add the alphabet.
+    // Add the alphabet.
+    for (int i = 0, sz = get_alphabet_count(); i < sz; i++) {
+      unionMachine.add_symbol(alphabet[i]);
+    }
     unionMachine.add_state(comboState);
 
     fsm::fill(thisMachine, otherMachine, unionMachine, comboState);
@@ -329,7 +332,7 @@ fsm::FSM<T> fsm::FSM<T>::operator|(const fsm::FSM<T> &rhs) const {
 
 template <typename T>
 void fsm::fill(fsm::FSM<T> m1, fsm::FSM<T> m2, fsm::FSM<T> &m3, fsm::State prevState) {
-    for(int i = 0, sz = m1.get_alphabet_count(); i < sz; i++){
+    for (int i = 0, sz = m1.get_alphabet_count(); i < sz; i++) {
         auto m1old = m1, m2old = m2;
         auto m3States = m3.get_states();
         char currLetter = m3.get_alphabet()[i];
@@ -339,9 +342,9 @@ void fsm::fill(fsm::FSM<T> m1, fsm::FSM<T> m2, fsm::FSM<T> &m3, fsm::State prevS
 
         fsm::State comboState = m1.get_current_state() + m2.get_current_state();
 
-        if(std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
+        if (std::find(m3States.begin(), m3States.end(), comboState) == m3States.end()){
             m3.add_state(comboState);
-            if(m1.is_in_final_state() || m2.is_in_final_state()) {
+            if (m1.is_in_final_state() || m2.is_in_final_state()) {
                 m3.add_final_state(comboState);
             }
             fsm::fill(m1, m2, m3, comboState);
