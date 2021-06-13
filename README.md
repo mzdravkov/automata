@@ -1,5 +1,5 @@
 # automata
-Deterministic Finite State Machine for a university project.
+An implementation of a Deterministic Finite State Machine for a university project.
 
 
 # How to run
@@ -10,7 +10,7 @@ $ ./automata
 ```
 
 # Update the documentation
-If you make changes the docstring, you can update the documentation by running:
+If you want to update the documentation, you can do so by running:
 
 ```bash
 $ make documentation
