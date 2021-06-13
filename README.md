@@ -1,4 +1,6 @@
 # automata
+[![Documentation](https://img.shields.io/badge/-Documentation%20-blue)](https://mzdravkov.github.io/automata/)
+
 An implementation of a Deterministic Finite State Machine for a university project.
 
 
